@@ -22,12 +22,16 @@ services:
     env_file:
       - ./.env.prod
   nginx:
-    build: ./nginx
+    image: sacovo/nginx-pagespeed
     volumes:
       - static_volume:/home/app/web/storage/static/
       - media_volume:/home/app/web/storage/media/
+      - ./nginx/nginx.conf:/usr/local/nginx/conf/nginx.conf
+      - nginx_cache:/var/ngx_cache
     expose:
       - 80
+    ports:
+      - 9080:80
     restart: always
     networks:
       - web
@@ -37,13 +41,11 @@ services:
     labels:
       - "traefik.docker.network=web"
       - "traefik.enable=true"
-      - "traefik.protocol=http"
-      - "traefik.basic.port=80"
-    # - "traefik.basic.frontend.rule=Host:example.com"
 volumes:
   postgres_data:
   static_volume:
   media_volume:
+  nginx_cache:
 
 networks:
   web:
