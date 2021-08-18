@@ -1,0 +1,59 @@
+version: '3.4'
+
+services:
+  redis:
+    image: redis
+    expose:
+      - 6379
+  
+  db:
+    image: "postgres:13"
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+  web:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: gunicorn core.wsgi:application -w 6 --bind 0.0.0.0:8000 --reload
+    env_file:
+      - .env
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/home/app/web 
+      - media:/media
+
+  celery:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    # command: celery -A core worker --loglevel DEBUG
+    command: watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- celery worker -A core worker --loglevel=DEBUG
+    volumes:
+      - .:/home/app/web/
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+
+  celery-beat:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: celery -A core beat --loglevel DEBUG 
+    volumes:
+      - .:/home/app/web/
+    env_file:
+      - .env
+    depends_on:
+      - celery
+
+volumes:
+  postgres_data:
+  media:

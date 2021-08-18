@@ -1,0 +1,14 @@
+Django
+Pillow
+psycopg2
+
+django-environ
+django-model-utils
+
+redis
+celery
+django-celery-beat
+
+gunicorn
+watchdog
+PyYAML

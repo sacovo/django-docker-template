@@ -1,0 +1,7 @@
+django-stubs
+celery-stubs
+
+pylint
+
+pylint-django
+pylint-celery
