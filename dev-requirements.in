@@ -5,3 +5,4 @@ pylint
 
 pylint-django
 pylint-celery
+pre-commit

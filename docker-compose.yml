@@ -1,11 +1,12 @@
 version: '3.4'
 
 services:
+
   redis:
     image: redis
     expose:
       - 6379
-  
+
   db:
     image: "postgres:13"
     env_file:
@@ -17,7 +18,8 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-    command: gunicorn core.wsgi:application -w 6 --bind 0.0.0.0:8000 --reload
+    image: address-tool:dev
+    command: python manage.py runserver 0.0.0.0:8000
     env_file:
       - .env
     depends_on:
@@ -25,15 +27,13 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - .:/home/app/web 
+      - .:/home/app/web
       - media:/media
 
   celery:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
+    image: address-tool:dev
     # command: celery -A core worker --loglevel DEBUG
-    command: watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- celery worker -A core worker --loglevel=DEBUG
+    command: watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- celery -A core worker --concurrency=6 --loglevel DEBUG
     volumes:
       - .:/home/app/web/
     env_file:
@@ -43,10 +43,8 @@ services:
       - redis
 
   celery-beat:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    command: celery -A core beat --loglevel DEBUG 
+    image: address-tool:dev
+    command: celery -A core beat --loglevel DEBUG
     volumes:
       - .:/home/app/web/
     env_file:
@@ -54,6 +52,17 @@ services:
     depends_on:
       - celery
 
+  luxdb:
+    image: registry.gitlab.com/sacovo/luxdb:latest
+    command: ["--loglevel", "DEBUG", "--host", "0.0.0.0", "--port", "8484"]
+    expose:
+      - 8484
+    volumes:
+      - luxdb-data:/data
+    env_file:
+      - .env
+
 volumes:
   postgres_data:
   media:
+  luxdb-data:

@@ -5,10 +5,16 @@ psycopg2
 django-environ
 django-model-utils
 
+channels
+channels-redis
 redis
 celery
 django-celery-beat
 
 gunicorn
+daphne
 watchdog
 PyYAML
+python-memcached
+argh
+luxdb
