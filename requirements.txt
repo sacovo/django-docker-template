@@ -100,9 +100,9 @@ luxdb==0.0.8
     # via -r requirements.in
 msgpack==1.0.2
     # via channels-redis
-numpy==1.21.3
+numpy==1.26.0
     # via luxdb
-pillow==8.4.0
+pillow==10.0.1
     # via -r requirements.in
 prompt-toolkit==3.0.22
     # via click-repl
@@ -162,7 +162,7 @@ watchdog==2.1.6
     # via -r requirements.in
 wcwidth==0.2.5
     # via prompt-toolkit
-zope.interface==5.4.0
+zope-interface==5.4.0
     # via twisted
 
 # The following packages are considered to be unsafe in a requirements file:
